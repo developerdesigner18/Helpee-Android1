@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "205855543998",
+    "project_id": "helpee-3af61",
+    "storage_bucket": "helpee-3af61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205855543998:android:f94c71c0f8a4c033f404ef",
+        "android_client_info": {
+          "package_name": "com.dds.helpee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "205855543998-1l737dncs85no3uoev32ofh1sm9edfdi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dds.helpee",
+            "certificate_hash": "169dbfd54d84ca7177dc176f21cefda8e78930b0"
+          }
+        },
+        {
+          "client_id": "205855543998-jujmkv1s5tqf5cpispsrr0ivjh0em8pc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALE8_xEhyAqHhOpHD0ApKdR3f3nA60kcc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205855543998-jujmkv1s5tqf5cpispsrr0ivjh0em8pc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "205855543998-ahc1fdkb857bklamtl9ujlqhto83749j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.helpe.e"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

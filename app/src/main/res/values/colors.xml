@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#F5CA0A</color>
+    <color name="colorPrimaryDark">#F5CA0A</color>
+    <color name="colorAccent">#F5CA0A</color>
+
+    <color name="code_color">#FFE489</color>
+
+    <color name="valid_color">#087A0D</color>
+    <color name="invalid_color">@android:color/holo_red_light</color>
+    <color name="red_alerts">#FD0005</color>
+</resources>

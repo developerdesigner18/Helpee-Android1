@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+
+    <LinearLayout
+        android:id="@+id/Ll_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:orientation="vertical"
+        android:weightSum="3">
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="2.2"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/_20sdp"></View>-->
+
+<!--        </LinearLayout>-->
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:weightSum="3">
+                <ImageView
+                    android:id="@+id/img_emergency"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/emergency"></ImageView>
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_weight="2.1"-->
+<!--                    android:gravity="center">-->
+
+
+<!--                </LinearLayout>-->
+
+                <LinearLayout
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:id="@+id/layout_emergency"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/half_rec_white"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:paddingRight="@dimen/_3sdp"
+                        android:paddingLeft="@dimen/_3sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                       android:paddingBottom="@dimen/_5sdp"
+                        android:text="@string/emergency"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:weightSum="3">
+                <ImageView
+                    android:id="@+id/img_report_alerts"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/report_alert"></ImageView>
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_weight="2.1"-->
+<!--                    android:gravity="center">-->
+
+
+<!--                </LinearLayout>-->
+
+                <LinearLayout
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:id="@+id/layout_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/half_rec_white"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:paddingRight="@dimen/_3sdp"
+                        android:paddingLeft="@dimen/_3sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                       android:paddingBottom="@dimen/_5sdp"
+                        android:text="@string/report_alert"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:weightSum="3">
+                <ImageView
+                    android:id="@+id/img_nearby_alerts"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/nearby_alert"></ImageView>
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_weight="2.1"-->
+<!--                    android:gravity="center">-->
+
+
+<!--                </LinearLayout>-->
+
+                <LinearLayout
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:id="@+id/layout_nearby"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/half_rec_white"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:paddingRight="@dimen/_3sdp"
+                        android:paddingLeft="@dimen/_3sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                       android:paddingBottom="@dimen/_5sdp"
+                        android:text="@string/near_by_alerts"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/Ll_top"></androidx.viewpager.widget.ViewPager>
+
+</RelativeLayout>

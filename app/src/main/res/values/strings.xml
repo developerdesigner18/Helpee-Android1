@@ -1,0 +1,93 @@
+<resources>
+    <string name="app_name">Helpee</string>
+
+    <string name="facebook_app_id">224332829264246</string>
+    <string name="fb_login_protocol_scheme">fb224332829264246</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="number">Number</string>
+    <string name="telephone">Phone Number</string>
+    <string name="log_in">LOG IN</string>
+    <string name="login">LOGIN</string>
+    <string name="registration">REGISTRATION</string>
+    <string name="enter_email">Enter email</string>
+
+    <string name="location">Location</string>
+
+    <string name="localized">You are localized in </string>
+
+    <string name="enter_phone_num">Enter phone number</string>
+    <string name="enter_pass">Enter password</string>
+    <string name="plz_enter_email">Please enter email</string>
+    <string name="plz_enter_pass">Please enter password</string>
+    <string name="enter_first_name">Enter first name</string>
+    <string name="enter_last_name">Enter last name</string>
+    <string name="enter_email1">Enter email</string>
+    <string name="enter_location">Adresse</string>
+    <string name="email_invalid_validation">Email invalid! Please check again..</string>
+    <string name="enter_phone_number">Please enter phone number</string>
+    <string name="plz_enter_first_name">Please enter first name</string>
+    <string name="plz_enter_last_name">Please enter last name</string>
+
+    <string name="please_wait">Please Wait</string>
+    <string name="no_connection">Internet not available..</string>
+    <string name="plz_enter_location">Please enter location</string>
+    <string name="emergency">Emergency</string>
+    <string name="report_alert">Report Alert</string>
+    <string name="near_by_alerts">Nearby Alerts</string>
+    <string name="sexual_assault">SEXUAL ASSAULT</string>
+    <string name="accident">ACCIDENT</string>
+    <string name="phycical_assault">PHYSICAL ASSAULT</string>
+
+    <string name="police">Police</string>
+    <string name="rescue">Rescue</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="english">English</string>
+
+    <string name="french">French</string>
+    <string name="profile_cap">PROFILE</string>
+    <string name="settings_cap">SETTINGS</string>
+    <string name="last_name">Last Name</string>
+    <string name="terms_condition">Terms and Conditions</string>
+    <string name="mark">Mark</string>
+    <string name="resend_otp">RESEND OTP</string>
+    <string name="notification">Notification</string>
+    <string name="update_details">Update Details</string>
+    <string name="settings">Settings</string>
+    <string name="first_name">First Name</string>
+    <string name="gross">Gross</string>
+
+    <string name="sent_to">Sent to </string>
+    <string name="home">HOME</string>
+    <string name="logout">Logout</string>
+
+    <string name="save">Save</string>
+    <string name="profile">Profile</string>
+    <string name="language_selection">Language Selection</string>
+
+    <string name="rape">Rape</string>
+    <string name="assualt">Assault</string>
+    <string name="kidnapping">KIDNAPPING</string>
+    <string name="acciedent">Accident</string>
+
+    <string name="email_address">Email Address</string>
+    <string name="mobile_num">Mobile Number</string>
+    <string name="delete_account">Delete Account</string>
+
+    <string name="submit">SUBMIT</string>
+    <string name="verfication_code">Verification Code</string>
+    <string name="select_country">Select Country</string>
+
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="alerts">Alert</string>
+
+    <string name="something_went_wrong">Something Went Wrong</string>
+
+    <string name="country">Country</string>
+    <string name="enter_country">Enter country</string>
+    <string name="plz_enter_country">Please enter country</string>
+    <string name="plz_enter_country_code">Please enter country code</string>
+    <string name="no_alerts" >Near by alerts not found....!</string>
+</resources>

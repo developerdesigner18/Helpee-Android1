@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical">
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/img_back"-->
+<!--            android:layout_width="@dimen/_25sdp"-->
+<!--            android:layout_height="@dimen/_25sdp"-->
+<!--            android:layout_gravity="center|left"-->
+<!--            android:src="@drawable/back"-->
+<!--            android:contentDescription="TODO"></ImageView>-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:text="@string/tc"-->
+<!--            android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+<!--            android:textColor="@color/tv_color"></TextView>-->
+<!--    </androidx.appcompat.widget.Toolbar>-->
+
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_marginLeft="@dimen/_10sdp"-->
+<!--        android:layout_marginRight="@dimen/_10sdp"-->
+<!--        android:background="@color/btn_bg_color"></View>-->
+
+    <RelativeLayout
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_17sdp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/termsCondition_mProgressBar"></ProgressBar>
+
+        <WebView
+            android:background="#F7FAFD"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/web_terms"></WebView>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

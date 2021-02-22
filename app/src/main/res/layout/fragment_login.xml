@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_verification"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_125sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/verification"></ImageView>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_marginBottom="@dimen/_16sdp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:id="@+id/layout_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_email"
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/radio_on"></ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_4sdp"
+                    android:gravity="center"
+                    android:text="@string/email"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/black"></TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_phone"
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/radio_off"></ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_4sdp"
+                    android:gravity="center"
+                    android:text="@string/telephone"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/black"></TextView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_marginRight="@dimen/_16sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/linear_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/email_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:focusableInTouchMode="true"
+                        app:hintTextColor="@color/valid_color">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_user_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textEmailAddress" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/phone_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:focusableInTouchMode="true"
+                        app:hintTextColor="@color/valid_color">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+
+                <!--                < <com.google.android.material.textfield.TextInputEditText-->
+                <!--                    android:id="@+id/et_user_name"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:cursorVisible="true"-->
+                <!--                    android:drawableLeft="@drawable/img_user"-->
+                <!--                    android:drawablePadding="@dimen/_10sdp"-->
+                <!--                    android:hint="@string/email"-->
+                <!--                    android:paddingBottom="@dimen/_10sdp"-->
+                <!--                    android:singleLine="true"-->
+                <!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+                <!--                    android:textCursorDrawable="@android:color/black"-->
+                <!--                    android:visibility="gone"></ <com.google.android.material.textfield.TextInputEditText>-->
+
+                <!--                < <com.google.android.material.textfield.TextInputEditText-->
+                <!--                    android:id="@+id/et_phone"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:cursorVisible="true"-->
+                <!--                    android:drawableLeft="@drawable/img_phone"-->
+                <!--                    android:drawablePadding="@dimen/_10sdp"-->
+                <!--                    android:hint="@string/number"-->
+                <!--                    android:paddingBottom="@dimen/_10sdp"-->
+                <!--                    android:singleLine="true"-->
+                <!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+                <!--                    android:textCursorDrawable="@android:color/black"></ <com.google.android.material.textfield.TextInputEditText>-->
+
+
+            </RelativeLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
+                app:hintTextColor="@color/valid_color"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:cursorVisible="true"
+                    android:inputType="textPassword"
+                    android:paddingBottom="@dimen/_10sdp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textCursorDrawable="@android:color/black"></com.google.android.material.textfield.TextInputEditText>
+                <!--                < <com.google.android.material.textfield.TextInputEditText-->
+                <!--                    android:id="@+id/et_password"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:hint="@string/enter_pass"-->
+                <!--                    android:inputType="textPassword" />-->
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <!--        <com.google.android.material.textfield.TextInputLayout-->
+            <!--            android:id="@+id/text_email"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:hint="@string/enter_email"-->
+            <!--            app:errorEnabled="true"-->
+            <!--            app:errorTextColor="@android:color/holo_red_dark"-->
+            <!--            app:hintEnabled="true"-->
+            <!--            app:hintTextColor="@android:color/holo_green_dark">-->
+
+            <!--            <com.google.android.material.textfield.TextInputEditText-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:inputType="textEmailAddress"-->
+            <!--                app:errorEnabled="true" />-->
+
+            <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+            <!--        <com.google.android.material.textfield.TextInputLayout-->
+            <!--            android:id="@+id/text_Password"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:theme="@style/Widget.AppTheme.TextInputLayout.FilledBox.Dense"-->
+            <!--            android:hint="@string/enter_pass"-->
+            <!--            app:endIconMode="password_toggle"-->
+            <!--            app:hintEnabled="true">-->
+
+            <!--            <com.google.android.material.textfield.TextInputEditText-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:inputType="textPassword"-->
+
+            <!--                app:errorEnabled="true" />-->
+
+            <!--        </com.google.android.material.textfield.TextInputLayout>-->
+            <!--        <com.google.android.material.textfield.TextInputLayout-->
+            <!--            android:id="@+id/username_text_input_layout"-->
+            <!--            app:passwordToggleEnabled="true"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content">-->
+
+            <!--                    < <com.google.android.material.textfield.TextInputEditText-->
+            <!--                        android:id="@+id/etUsername"-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="wrap_content"-->
+            <!--                        android:layout_centerHorizontal="true"-->
+            <!--                        android:layout_centerVertical="true"-->
+            <!--                        android:ems="10"-->
+            <!--                        android:inputType="textPassword"-->
+            <!--                        android:hint="Username" />-->
+
+            <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+
+            <!--            < <com.google.android.material.textfield.TextInputEditText-->
+            <!--                android:id="@+id/et_password"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="@dimen/_10sdp"-->
+            <!--                android:cursorVisible="true"-->
+            <!--                android:drawableStart="@drawable/img_password"-->
+            <!--                android:drawableLeft="@drawable/img_password"-->
+            <!--                android:drawableEnd="@drawable/img_password"-->
+            <!--                android:drawablePadding="@dimen/_10sdp"-->
+            <!--                android:hint="@string/password"-->
+            <!--                android:inputType="textPassword"-->
+            <!--                android:paddingBottom="@dimen/_10sdp"-->
+            <!--                android:singleLine="true"-->
+            <!--                android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+            <!--                android:textCursorDrawable="@android:color/black"></ <com.google.android.material.textfield.TextInputEditText>-->
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/tv_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_button"
+                android:paddingLeft="@dimen/_36sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingRight="@dimen/_36sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:text="@string/log_in"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"></TextView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <!--            <com.facebook.login.widget.LoginButton-->
+            <!--                android:id="@+id/login_button"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center_horizontal"-->
+            <!--                android:layout_marginTop="30dp"-->
+            <!--                android:layout_marginBottom="30dp" />-->
+
+            <!--            <FrameLayout-->
+            <!--                android:visibility="visible"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:id="@+id/FrameLayout1"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content">-->
+
+            <!--                <com.facebook.login.widget.LoginButton-->
+            <!--                    android:id="@+id/login_button"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_gravity="center_horizontal"-->
+            <!--                    android:layout_marginLeft="@dimen/_40sdp"-->
+            <!--                    android:layout_marginRight="@dimen/_10sdp"-->
+            <!--                    android:visibility="gone" />-->
+
+            <ImageView
+                android:id="@+id/img_fb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_40sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:src="@drawable/facebook"></ImageView>
+            <!--            </FrameLayout>-->
+
+
+            <ImageView
+                android:id="@+id/img_google"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_40sdp"
+                android:layout_weight="1"
+                android:src="@drawable/google"></ImageView>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
