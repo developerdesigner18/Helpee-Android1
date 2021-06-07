@@ -2,6 +2,7 @@ package com.dds.helpee.adapters;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,8 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.MyViewHo
     {
         holder.tv_report.setText(listEmergency.get(position).getTypes());
 
-        Glide.with(context).load(ApiClient.ALERT_IMAGE_URL+listEmergency.get(position).getImage()).into(holder.img_report);
+        Log.e("image",""+listEmergency.get(position).getImage());
+        Glide.with(context).load(listEmergency.get(position).getImage()).into(holder.img_report);
 
         holder.itemView.setOnClickListener(new View.OnClickListener()
         {

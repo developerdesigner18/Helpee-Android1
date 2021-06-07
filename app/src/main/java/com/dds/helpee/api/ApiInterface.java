@@ -29,8 +29,7 @@ public interface ApiInterface
     @POST("sociallogin")
     Call<Response> Do_Social_Login(@Query("type") String type,
                             @Query("email") String email,
-                            @Query("name") String name,
-                            @Query("image") String image);
+                            @Query("name") String name);
 
     @POST("verifycode")
     Call<Response> VerifyCode(@Query("type") String type,
@@ -80,7 +79,8 @@ public interface ApiInterface
                                   @Query("location") String location,
                                   @Query("latitude") double latitude,
                                   @Query("longitude") double longitude,
-                                  @Query("country")String country);
+                                  @Query("country")String country,
+                               @Query("date_time")String date_time);
 
     @POST("savetoken")
     Call<Response> SaveFCMToken(@Query("id") int userid,

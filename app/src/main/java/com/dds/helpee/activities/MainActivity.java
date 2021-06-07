@@ -8,7 +8,11 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,13 +21,21 @@ import com.dds.helpee.LocaleManager1;
 import com.dds.helpee.R;
 import com.dds.helpee.adapters.LoginRegisPagerAdapter;
 import com.dds.helpee.api.ApiClient;
+import com.dds.helpee.fragments.HomeFragment;
 import com.dds.helpee.model.Const;
 import com.dds.helpee.model.CountryListResponse;
+import com.dds.helpee.model.Data;
 import com.dds.helpee.model.Number;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +68,8 @@ public class MainActivity extends BaseActivity
 
         pref = getSharedPreferences(Const.PREF_NAME, MODE_PRIVATE);
         et = pref.edit();
+
+//        printHashKey(MainActivity.this);
 
         if(ApiClient.isNetworkAvailable(MainActivity.this))
         {
@@ -109,17 +123,52 @@ public class MainActivity extends BaseActivity
             @Override
             public void onResponse(Call<CountryListResponse> call, retrofit2.Response<CountryListResponse> response)
             {
-                if(response != null && response.isSuccessful())
+                if(response != null )
                 {
-                    if(response.body() != null)
+                    if(response.isSuccessful())
                     {
-                        listCountries = response.body().getNumberList();
-
-                        if(listCountries != null && listCountries.size() > 0 )
+                        if(response.body() != null)
                         {
+                            listCountries = response.body().getNumberList();
+
+                            if(listCountries != null && listCountries.size() > 0 )
+                            {
 //                            Toast.makeText(MainActivity.this, "countrylist"+listCountries.size() , Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
+                    else
+                    {
+                        if(response.errorBody() != null)
+                        {
+                            String msg = response.errorBody().source().toString();
+                            Log.e("msg",""+msg);
+                            String[] arr = msg.split("=");
+                            if(arr.length == 2)
+                            {
+                                msg = arr[1].replace("]"," ").trim();
+                                if(msg != null)
+                                {
+                                    try
+                                    {
+                                        JSONObject obh = new JSONObject(msg);
+                                        if(obh.getString("message") != null)
+                                        {
+                                            String message =  obh.getString("message").toString();
+                                            Log.e("message",""+message);
+                                            Toast.makeText(MainActivity.this, ""+message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                Log.e("msg",""+msg);
+                            }
+                        }
+                    }
+
                 }
                 else
                 {
@@ -135,4 +184,5 @@ public class MainActivity extends BaseActivity
             }
         });
     }
+
 }

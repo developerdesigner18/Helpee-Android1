@@ -42,6 +42,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -170,49 +173,84 @@ public class ProfileFragment extends Fragment
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        Log.e("profile_response",""+new Gson().toJson(response.body()));
-
-                        if(response.body() != null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
-                            Data objdata = response.body().getData();
-                            if(objdata != null)
+                            Log.e("profile_response",""+new Gson().toJson(response.body()));
+
+                            if(response.body() != null && response.body().getSuccess() == 1)
                             {
-                                tv_first_name.setText(objdata.getFirstName());
-                                tv_last_name.setText(objdata.getLastName());
-                                tv_email.setText(objdata.getEmail());
-                                tv_location.setText(objdata.getLocation());
+                                Data objdata = response.body().getData();
+                                if(objdata != null)
+                                {
+                                    tv_first_name.setText(objdata.getFirstName());
+                                    tv_last_name.setText(objdata.getLastName());
+                                    tv_email.setText(objdata.getEmail());
+                                    tv_location.setText(objdata.getLocation());
 
 //                                et.putString(Const.TOKEN, token);
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putInt(Const.USER_ID, objdata.getId());
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putString(Const.LANGUAGE, objdata.getLanguage());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putInt(Const.USER_ID, objdata.getId());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putString(Const.LANGUAGE, objdata.getLanguage());
 
-                                if(objdata.getMobile() != null)
-                                {
-                                    et.putString(Const.PHONE, objdata.getMobile());
+                                    if(objdata.getMobile() != null)
+                                    {
+                                        et.putString(Const.PHONE, objdata.getMobile());
+                                    }
+                                    if(objdata.getEmail() != null)
+                                    {
+                                        et.putString(Const.EMAIL, objdata.getEmail());
+                                    }
+                                    if(objdata.getLocation() != null)
+                                    {
+                                        et.putString(Const.LOCATION, objdata.getLocation());
+                                    }
+                                    et.commit();
+                                    et.apply();
                                 }
-                                if(objdata.getEmail() != null)
-                                {
-                                    et.putString(Const.EMAIL, objdata.getEmail());
-                                }
-                                if(objdata.getLocation() != null)
-                                {
-                                    et.putString(Const.LOCATION, objdata.getLocation());
-                                }
-                                et.commit();
-                                et.apply();
+                            }
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
                 @Override
@@ -273,7 +311,8 @@ public class ProfileFragment extends Fragment
             pd.show();
 
             Call<Response> call = ApiClient.create_InstanceAuth(token).DeleteAccount(userid);
-            call.enqueue(new Callback<Response>() {
+            call.enqueue(new Callback<Response>()
+            {
                 @Override
                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response)
                 {
@@ -281,25 +320,60 @@ public class ProfileFragment extends Fragment
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null)
                     {
-                        if (response.body() != null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
-                            et.clear();
-                            et.commit();
-                            et.apply();
+                            if (response.body() != null && response.body().getSuccess() == 1)
+                            {
+                                et.clear();
+                                et.commit();
+                                et.apply();
 
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 
-                            Intent i_go = new Intent(getActivity(), MainActivity.class);
-                            startActivity(i_go);
+                                Intent i_go = new Intent(getActivity(), MainActivity.class);
+                                startActivity(i_go);
+                            }
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
 
@@ -341,31 +415,67 @@ public class ProfileFragment extends Fragment
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        if(response.errorBody()!= null)
+                        if(response.isSuccessful())
                         {
-                            Log.e("error",""+new Gson().toJson(response.errorBody()));
-//                            ErrorPojoClass error = response.errorBody();
+                            if (response.body() != null && response.body().getSuccess() == 1)
+                            {
+                                et.putBoolean(Const.LOGIN , false);
+                                et.commit();
+                                et.apply();
 
-                        }
-                        else if (response.body() != null && response.body().getSuccess() == 1)
-                        {
-                            et.putBoolean(Const.LOGIN , false);
-                            et.commit();
-                            et.apply();
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-
-                            Intent i_go = new Intent(getActivity(), MainActivity.class);
-                            startActivity(i_go);
+                                Intent i_go = new Intent(getActivity(), MainActivity.class);
+                                startActivity(i_go);
+                            }
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+
+                                                et.putBoolean(Const.LOGIN , false);
+                                                et.commit();
+                                                et.apply();
+
+                                                Intent i_go = new Intent(getActivity(), MainActivity.class);
+                                                startActivity(i_go);
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
 

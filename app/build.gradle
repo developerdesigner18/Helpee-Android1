@@ -18,6 +18,23 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+//    signingConfigs {
+//        release {
+//            storeFile file('D:\\ankita_projects\\Helpee\\helpee.jks')
+//            storePassword "123456"
+//            keyAlias 'key0'
+//            keyPassword "123456"
+//            v2SigningEnabled false
+//        }
+//    }
+    buildTypes {
+        release {
+//            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

@@ -1,5 +1,9 @@
 package com.dds.helpee.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +25,7 @@ import com.dds.helpee.R;
 import com.dds.helpee.activities.HomeActivity;
 import com.dds.helpee.adapters.AlertsPagerAdapter;
 import com.dds.helpee.adapters.HomePagerAdapter;
+import com.dds.helpee.api.ApiClient;
 import com.dds.helpee.interfaces.UpdateableFragment;
 import com.dds.helpee.model.Emergency;
 import com.google.android.material.textfield.TextInputLayout;
@@ -36,9 +41,36 @@ public class HomeFragment extends Fragment implements UpdateableFragment
     ImageView img_emergency, img_report, img_nearby;
 
     UpdateableFragment objinter ;
-
+    MyBroadcastReceiver receiver;
     TextInputLayout email_layout, password_layout, phone_layout;
     View view;
+
+    private class MyBroadcastReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            Bundle extras = intent.getExtras();
+
+            String state = extras.getString("extra");
+
+            if(state != null)
+            {
+                if (ApiClient.isNetworkAvailable(getActivity()))
+                {
+                    final AlertsPagerAdapter pagerAdapter ;
+                    pagerAdapter = new AlertsPagerAdapter(getActivity(), getChildFragmentManager());
+                    pager_home.setAdapter(pagerAdapter);
+                    pager_home.setCurrentItem(0);
+                    unSelectedColor();
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 
     @Nullable
     @Override
@@ -65,9 +97,6 @@ public class HomeFragment extends Fragment implements UpdateableFragment
 
         Log.e("EmergencyFragmentCode", ""+ HomeFragment.countryCode);
         Log.e("EmergencyFrtCountry", ""+ HomeFragment.country );
-
-
-
 
         objinter = this;
         objinter.update();
@@ -153,7 +182,7 @@ public class HomeFragment extends Fragment implements UpdateableFragment
                 unSelectedColor();
                 img_nearby.setColorFilter(getActivity().getResources().getColor(R.color.colorPrimary));
                 layout_nearby.setBackgroundResource(R.drawable.half_rec_yellow);
-                pager_home.setCurrentItem(3);
+                pager_home.setCurrentItem(2);
             }
         });
         return  view;
@@ -170,12 +199,31 @@ public class HomeFragment extends Fragment implements UpdateableFragment
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         unSelectedColor();
         img_emergency.setColorFilter(getActivity().getResources().getColor(R.color.colorPrimary));
         layout_emergency.setBackgroundResource(R.drawable.half_rec_yellow);
         pager_home.setCurrentItem(0);
+
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(getActivity().getPackageName());
+//        receiver = new MyBroadcastReceiver();
+//        if(receiver != null)
+//        {
+//            getActivity().registerReceiver(receiver, intentFilter);
+//        }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        if(receiver != null)
+        {
+            getActivity().unregisterReceiver(receiver);
+        }
     }
 
     @Override

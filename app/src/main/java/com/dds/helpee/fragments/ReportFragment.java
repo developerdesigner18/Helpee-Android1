@@ -36,6 +36,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,29 +194,64 @@ public class ReportFragment extends Fragment
                 }
                 if(response != null && response.isSuccessful())
                 {
-                    Log.e("alert_response",""+new Gson().toJson(response.body()));
-
-                    if(response.body() != null && response.body().getSuccess() == 1)
+                    if(response.isSuccessful())
                     {
-                        if(response.body().getEmergency() != null)
+                        Log.e("alert_response",""+new Gson().toJson(response.body()));
+
+                        if(response.body() != null && response.body().getSuccess() == 1)
                         {
-                            listEmergency = response.body().getEmergency();
-                            Log.e("listEmergency", ""+listEmergency.size());
-                            if(listEmergency != null && listEmergency.size() > 0)
+                            if(response.body().getEmergency() != null)
                             {
-                                GridLayoutManager manager = new GridLayoutManager(getActivity() , 2);
-                                rcv_reports.setLayoutManager(manager);
-                                ReportsAdapter adapter;
-                                adapter = new ReportsAdapter(getActivity(), listEmergency, obj);
-                                rcv_reports.setAdapter(adapter);
+                                listEmergency = response.body().getEmergency();
+                                Log.e("listEmergency", ""+listEmergency.size());
+                                if(listEmergency != null && listEmergency.size() > 0)
+                                {
+                                    GridLayoutManager manager = new GridLayoutManager(getActivity() , 2);
+                                    rcv_reports.setLayoutManager(manager);
+                                    ReportsAdapter adapter;
+                                    adapter = new ReportsAdapter(getActivity(), listEmergency, obj);
+                                    rcv_reports.setAdapter(adapter);
+                                }
                             }
+                        }
+                        else
+                        {
+                            String message  = (String) response.body().getMessage();
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                         }
                     }
                     else
                     {
-                        String message  = (String) response.body().getMessage();
-                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                        if(response.errorBody() != null)
+                        {
+                            String msg = response.errorBody().source().toString();
+                            Log.e("msg",""+msg);
+                            String[] arr = msg.split("=");
+                            if(arr.length == 2)
+                            {
+                                msg = arr[1].replace("]"," ").trim();
+                                if(msg != null)
+                                {
+                                    try
+                                    {
+                                        JSONObject obh = new JSONObject(msg);
+                                        if(obh.getString("message") != null)
+                                        {
+                                            String message =  obh.getString("message").toString();
+                                            Log.e("message",""+message);
+                                            Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                Log.e("msg",""+msg);
+                            }
+                        }
                     }
+
                 }
             }
             @Override

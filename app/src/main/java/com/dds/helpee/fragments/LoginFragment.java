@@ -4,18 +4,21 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
 import com.dds.helpee.R;
 import com.dds.helpee.activities.HomeActivity;
 import com.dds.helpee.api.ApiClient;
@@ -34,7 +36,6 @@ import com.dds.helpee.model.Const;
 import com.dds.helpee.model.Data;
 import com.dds.helpee.model.Response;
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -50,13 +51,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
@@ -64,6 +61,8 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import retrofit2.Call;
@@ -101,9 +100,14 @@ public class LoginFragment extends Fragment
 
         FacebookSdk.sdkInitialize(getActivity());
 
+//        String hash = printHashKey(getActivity());
+
         et_phone = (TextInputEditText) view.findViewById(R.id.et_phone);
         et_user_name = (TextInputEditText) view.findViewById(R.id.et_user_name);
         et_password = (TextInputEditText) view.findViewById(R.id.et_password);
+
+//        Log.e("hashkey",""+hash);
+
 
         img_fb = (ImageView) view.findViewById(R.id.img_fb);
         img_google = (ImageView) view.findViewById(R.id.img_google);
@@ -237,7 +241,6 @@ public class LoginFragment extends Fragment
                                 getUserProfile(AccessToken.getCurrentAccessToken());
                             }
                         }
-
                         @Override
                         public void onCancel()
                         {
@@ -345,46 +348,80 @@ public class LoginFragment extends Fragment
                             {
                                 pd.dismiss();
                             }
-                            if(response != null && response.isSuccessful())
+                            if(response != null)
                             {
-                                Log.e("response",""+new Gson().toJson(response.body()));
-                                if(response.body() != null)
+                                if(response.isSuccessful())
                                 {
-                                    if(response.body().getSuccess()== 1)
+                                    Log.e("response",""+new Gson().toJson(response.body()));
+                                    if(response.body() != null)
                                     {
-                                        Data data = (Data) response.body().getData();
-                                        if(data != null)
+                                        if(response.body().getSuccess()== 1)
                                         {
-                                            String token = data.getToken();
-                                            String email = data.getEmail();
-                                            String f_name = data.getFirstName();
-                                            String l_name = data.getLastName();
-                                            int userId = data.getId();
-                                            String location = data.getLocation();
-                                            String mobile = data.getMobile();
+                                            Data data = (Data) response.body().getData();
+                                            if(data != null)
+                                            {
+                                                String token = data.getToken();
+                                                String email = data.getEmail();
+                                                String f_name = data.getFirstName();
+                                                String l_name = data.getLastName();
+                                                int userId = data.getId();
+                                                String location = data.getLocation();
+                                                String mobile = data.getMobile();
 
-                                            et.putString(Const.TYPE, type);
-                                            et.putString(Const.TOKEN, token);
-                                            et.putString(Const.FIRST_NAME, f_name);
-                                            et.putString(Const.LAST_NAME, l_name);
-                                            et.putInt(Const.USER_ID, userId);
-                                            et.putString(Const.PHONE, mobile);
-                                            et.putString(Const.LOCATION, location);
-                                            et.putString(Const.EMAIL, email);
-                                            et.putBoolean(Const.LOGIN, true);
-                                            et.commit();
-                                            et.apply();
+                                                et.putString(Const.TYPE, type);
+                                                et.putString(Const.TOKEN, token);
+                                                et.putString(Const.FIRST_NAME, f_name);
+                                                et.putString(Const.LAST_NAME, l_name);
+                                                et.putInt(Const.USER_ID, userId);
+                                                et.putString(Const.PHONE, mobile);
+                                                et.putString(Const.LOCATION, location);
+                                                et.putString(Const.EMAIL, email);
+                                                et.putBoolean(Const.LOGIN, true);
+                                                et.commit();
+                                                et.apply();
 
-                                            Intent i_home = new Intent(getActivity(), HomeActivity.class);
-                                            startActivity(i_home);
+                                                Intent i_home = new Intent(getActivity(), HomeActivity.class);
+                                                startActivity(i_home);
+                                            }
+                                            String message = (String) response.body().getMessage();
+                                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                         }
-                                        String message = (String) response.body().getMessage();
-                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                        else
+                                        {
+                                            String message = (String) response.body().getMessage();
+                                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                    else
+                                }
+                                else
+                                {
+                                    if(response.errorBody() != null)
                                     {
-                                        String message = (String) response.body().getMessage();
-                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                        String msg = response.errorBody().source().toString();
+                                        Log.e("msg",""+msg);
+                                        String[] arr = msg.split("=");
+                                        if(arr.length == 2)
+                                        {
+                                            msg = arr[1].replace("]"," ").trim();
+                                            if(msg != null)
+                                            {
+                                                try
+                                                {
+                                                    JSONObject obh = new JSONObject(msg);
+                                                    if(obh.getString("message") != null)
+                                                    {
+                                                        String message =  obh.getString("message").toString();
+                                                        Log.e("message",""+message);
+                                                        Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                                catch (JSONException e)
+                                                {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                            Log.e("msg",""+msg);
+                                        }
                                     }
                                 }
                             }
@@ -601,7 +638,7 @@ public class LoginFragment extends Fragment
                 String name = account.getDisplayName();
                 String email = account.getEmail();
                 Uri imageUri = account.getPhotoUrl();
-                PassGoogleData("4", name, email, imageUri);
+                PassGoogleData("4", name, email);
             }
 
 
@@ -617,10 +654,10 @@ public class LoginFragment extends Fragment
 //            updateUI(null);
         }
     }
-    public void PassGoogleData(String type, String name , String email, Uri uri)
+    public void PassGoogleData(String type, String name , String email)
     {
 
-        Call<Response> call = ApiClient.create_Istance().Do_Social_Login(type, email, name, String.valueOf(uri));
+        Call<Response> call = ApiClient.create_Istance().Do_Social_Login(type, email, name);
         call.enqueue(new Callback<Response>()
         {
             @Override
@@ -632,50 +669,78 @@ public class LoginFragment extends Fragment
                 }
                 if(response != null)
                 {
-                    Log.e("response",""+new Gson().toJson(response.body()));
-                    if(response.errorBody()!= null)
+                    if(response.isSuccessful())
                     {
-                        Log.e("error",""+new Gson().toJson(response.errorBody()));
-//                            ErrorPojoClass error = response.errorBody();
-
-                    }
-                   else  if(response.isSuccessful() && response.body() != null)
-                    {
-                        if(response.body().getSuccess()== 1)
+                        Log.e("response",""+new Gson().toJson(response.body()));
+                        if(response.body() != null)
                         {
-                            Data data = (Data) response.body().getData();
-                            if(data != null)
+                            if(response.body().getSuccess()== 1)
                             {
-                                String token = data.getToken();
-                                String email = data.getEmail();
-                                String f_name = data.getFirstName();
-                                int userId = data.getId();
-
-                                if(data.getImage() != null)
+                                Data data = (Data) response.body().getData();
+                                if(data != null)
                                 {
-                                    String image = data.getImage();
-                                    et.putString(Const.IMAGE, image);
+                                    String token = data.getToken();
+                                    String email = data.getEmail();
+                                    String f_name = data.getFirstName();
+                                    int userId = data.getId();
+
+                                    if(data.getImage() != null)
+                                    {
+                                        String image = data.getImage();
+                                        et.putString(Const.IMAGE, image);
+                                    }
+                                    et.putString(Const.TYPE, type);
+                                    et.putString(Const.TOKEN, token);
+                                    et.putString(Const.FIRST_NAME, f_name);
+                                    et.putInt(Const.USER_ID, userId);
+
+                                    et.putString(Const.EMAIL, email);
+                                    et.putBoolean(Const.LOGIN, true);
+                                    et.commit();
+                                    et.apply();
+
+                                    Intent i_home = new Intent(getActivity(), HomeActivity.class);
+                                    startActivity(i_home);
                                 }
-                                et.putString(Const.TYPE, type);
-                                et.putString(Const.TOKEN, token);
-                                et.putString(Const.FIRST_NAME, f_name);
-                                et.putInt(Const.USER_ID, userId);
-
-                                et.putString(Const.EMAIL, email);
-                                et.putBoolean(Const.LOGIN, true);
-                                et.commit();
-                                et.apply();
-
-                                Intent i_home = new Intent(getActivity(), HomeActivity.class);
-                                startActivity(i_home);
+                                String message = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                             }
-                            String message = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            else
+                            {
+                                String message = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        if(response.errorBody() != null)
                         {
-                            String message = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            String msg = response.errorBody().source().toString();
+                            Log.e("msg",""+msg);
+                            String[] arr = msg.split("=");
+                            if(arr.length == 2)
+                            {
+                                msg = arr[1].replace("]"," ").trim();
+                                if(msg != null)
+                                {
+                                    try
+                                    {
+                                        JSONObject obh = new JSONObject(msg);
+                                        if(obh.getString("message") != null)
+                                        {
+                                            String message =  obh.getString("message").toString();
+                                            Log.e("message",""+message);
+                                            Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                Log.e("msg",""+msg);
+                            }
                         }
                     }
                 }
@@ -759,7 +824,7 @@ public class LoginFragment extends Fragment
                             String id = object.getString("id");
                             String image_url = "https://graph.facebook.com/" + id + "/picture?type=normal";
 
-                            PassGoogleData("3" , first_name, email, Uri.parse(image_url));
+                            PassGoogleData("3" , first_name, email);
 
 //                            Intent i_go = new Intent(getActivity(), HomeActivity.class);
 //                            startActivity(i_go);
@@ -775,5 +840,23 @@ public class LoginFragment extends Fragment
         parameters.putString("fields", "first_name,last_name,email,id");
         request.setParameters(parameters);
         request.executeAsync();
+    }
+    public static String printHashKey(Context pContext) {
+        try {
+            PackageInfo info = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.i("TAG", "printHashKey() Hash Key: " + hashKey);
+                return  hashKey;
+
+            }
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("TAG", "printHashKey()", e);
+        } catch (Exception e) {
+            Log.e("TAG", "printHashKey()", e);
+        }
+        return null;
     }
 }

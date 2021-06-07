@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -46,6 +48,7 @@ import com.dds.helpee.adapters.HomePagerAdapter;
 import com.dds.helpee.api.ApiClient;
 import com.dds.helpee.fragments.EmergencyFragment;
 import com.dds.helpee.fragments.HomeFragment;
+import com.dds.helpee.fragments.NearByFragment;
 import com.dds.helpee.fragments.ProfileFragment;
 import com.dds.helpee.fragments.SettingsFragment;
 import com.dds.helpee.interfaces.UpdateableFragment;
@@ -66,6 +69,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +84,23 @@ import retrofit2.Callback;
 
 public class HomeActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener
 {
+    private FragmentRefreshListener fragmentRefreshListener;
+
+    public FragmentRefreshListener getFragmentRefreshListener()
+    {
+        return fragmentRefreshListener;
+    }
+
+    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener)
+    {
+        this.fragmentRefreshListener = fragmentRefreshListener;
+    }
+
+    public interface FragmentRefreshListener
+    {
+        void onRefresh();
+    }
+
     ViewPager pager;
 //    TabLayout tab_main;
     HomePagerAdapter pagerAdapter;
@@ -98,6 +123,8 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
     double current_lat =  0 , current_long = 0, old_lat = 0 , old_long = 0;
     ProgressDialog pd;
     private RequestPermissionHandler mRequestPermissionHandler;
+
+//    MyBroadcastReceiver receiver;
 
     UpdateableFragment objInter = null;
     String[] permissions =
@@ -410,17 +437,52 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
             {
                 if(response != null)
                 {
-                    if(response.isSuccessful() && response.body() != null)
+                    if(response.isSuccessful())
                     {
-                        Log.e("fcmResponse", ""+new Gson().toJson(response.body()));
+                        if(response.isSuccessful() && response.body() != null)
+                        {
+                            Log.e("fcmResponse", ""+new Gson().toJson(response.body()));
 
-                        String message = (String) response.body().getMessage();
+                            String message = (String) response.body().getMessage();
 
 //                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                        }
                     }
                     else
                     {
+                        if(response.errorBody() != null)
+                        {
+                            String msg = response.errorBody().source().toString();
+                            Log.e("msg",""+msg);
+                            String[] arr = msg.split("=");
+                            if(arr.length == 2)
+                            {
+                                msg = arr[1].replace("]"," ").trim();
+                                if(msg != null)
+                                {
+                                    try
+                                    {
+                                        JSONObject obh = new JSONObject(msg);
+                                        if(obh.getString("message") != null)
+                                        {
+                                            String message =  obh.getString("message").toString();
+                                            Log.e("message",""+message);
+                                            Toast.makeText(HomeActivity.this, ""+message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                Log.e("msg",""+msg);
+                            }
+                        }
                     }
+
                 }
             }
 
@@ -617,12 +679,14 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
     {
         Dialog d_alert = new Dialog(HomeActivity.this);
         d_alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        d_alert.getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+        d_alert.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
         d_alert.setContentView(R.layout.dialog_create_alert);
         TextView tv_cancel = (TextView) d_alert.findViewById(R.id.tv_cancel);
         TextView tv_alert = (TextView) d_alert.findViewById(R.id.tv_alert);
         TextView tv_location = (TextView) d_alert.findViewById(R.id.tv_location);
+        TextView tv_title = (TextView) d_alert.findViewById(R.id.tv_title);
 
+        tv_title.setText(emergency.getTypes());
         tv_location.setText(address);
         tv_alert.setOnClickListener(new View.OnClickListener()
         {
@@ -652,8 +716,15 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
             pd.setMessage(getString(R.string.please_wait));
             pd.show();
 
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+            String datetime = dateformat.format(c.getTime());
+            System.out.println(datetime);
+
+            Log.e("datetime",""+datetime);
+
             Call<Response> call = ApiClient.create_InstanceAuth(token).CreateAlert(userid, emergency.getId(),
-                    address.trim(),current_lat, current_long, countryName );
+                    address.trim(),current_lat, current_long, countryName, datetime );
 
             call.enqueue(new Callback<Response>()
             {
@@ -664,19 +735,59 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        Log.e("respose_alert_create",""+new Gson().toJson(response.body()));
-                        if(response.body()!= null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
-                            String msg = (String) response.body().getMessage();
-                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            Log.e("respose_alert_create",""+new Gson().toJson(response.body()));
+                            if(response.body()!= null && response.body().getSuccess() == 1)
+                            {
+                                String msg = (String) response.body().getMessage();
+                                Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+
+//                                if(getFragmentRefreshListener() != null)
+//                                {
+//                                    getFragmentRefreshListener().onRefresh();
+//                                }
+                            }
+                            else
+                            {
+                                String msg = (String) response.body().getMessage();
+                                Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else
                         {
-                            String msg = (String) response.body().getMessage();
-                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(HomeActivity.this, ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
                 @Override
@@ -742,56 +853,90 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        Log.e("profile_response",""+new Gson().toJson(response.body()));
-
-                        if(response.body() != null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
-                            Data objdata = response.body().getData();
-                            if(objdata != null)
+                            Log.e("profile_response",""+new Gson().toJson(response.body()));
+
+                            if(response.body() != null && response.body().getSuccess() == 1)
                             {
+                                Data objdata = response.body().getData();
+                                if(objdata != null)
+                                {
 //                                tv_first_name.setText(objdata.getFirstName());
 //                                tv_last_name.setText(objdata.getLastName());
 //                                tv_email.setText(objdata.getEmail());
 //                                tv_location.setText(objdata.getLocation());
 
 //                                et.putString(Const.TOKEN, token);
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putInt(Const.USER_ID, objdata.getId());
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putString(Const.LANGUAGE, objdata.getLanguage());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putInt(Const.USER_ID, objdata.getId());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putString(Const.LANGUAGE, objdata.getLanguage());
 
-                                if(objdata.getMobile() != null)
-                                {
-                                    et.putString(Const.PHONE, objdata.getMobile());
-                                }
-                                if(objdata.getEmail() != null)
-                                {
-                                    et.putString(Const.EMAIL, objdata.getEmail());
-                                }
-                                if(objdata.getLocation() != null)
-                                {
-                                    et.putString(Const.LOCATION, objdata.getLocation());
-                                }
-                                et.commit();
-                                et.apply();
+                                    if(objdata.getMobile() != null)
+                                    {
+                                        et.putString(Const.PHONE, objdata.getMobile());
+                                    }
+                                    if(objdata.getEmail() != null)
+                                    {
+                                        et.putString(Const.EMAIL, objdata.getEmail());
+                                    }
+                                    if(objdata.getLocation() != null)
+                                    {
+                                        et.putString(Const.LOCATION, objdata.getLocation());
+                                    }
+                                    et.commit();
+                                    et.apply();
 
-                                updateResources(HomeActivity.this, objdata.getLanguage().toLowerCase());
-                                LocaleManager1.setNewLocale(HomeActivity.this, objdata.getLanguage().toLowerCase());
-                                getSupportFragmentManager().beginTransaction().add(R.id.frame,new HomeFragment()).addToBackStack(null).commit();
+                                    updateResources(HomeActivity.this, objdata.getLanguage().toLowerCase());
+                                    LocaleManager1.setNewLocale(HomeActivity.this, objdata.getLanguage().toLowerCase());
+                                    getSupportFragmentManager().beginTransaction().add(R.id.frame,new HomeFragment()).addToBackStack(null).commit();
 
-                                tv_profile.setText(getString(R.string.profile_cap));
-                                tv_settings.setText(getString(R.string.settings_cap));
-                                tv_home.setText(getString(R.string.home));
+                                    tv_profile.setText(getString(R.string.profile_cap));
+                                    tv_settings.setText(getString(R.string.settings_cap));
+                                    tv_home.setText(getString(R.string.home));
+                                }
+                            }
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(HomeActivity.this, ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
                     }
                 }
@@ -833,6 +978,27 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
         context.getResources().updateConfiguration(config,  context.getResources().getDisplayMetrics());
 
     }
+//    @Override
+//    public void onResume()
+//    {
+//        super.onResume();
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(getPackageName());
+//        receiver = new MyBroadcastReceiver();
+//        if(receiver != null)
+//        {
+//            registerReceiver(receiver, intentFilter);
+//        }
+//    }
+//    @Override
+//    public void onPause()
+//    {
+//        super.onPause();
+//        if(receiver != null)
+//        {
+//           unregisterReceiver(receiver);
+//        }
+//    }
     public static void setNewLocale(AppCompatActivity mContext, @LocaleManager1.LocaleDef String language, int user_id)
     {
         LocaleManager1.setNewLocale(mContext, language);
@@ -840,7 +1006,29 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
 //        mContext.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 //        ((HomeActivity)mContext).finish();
     }
-
+//    private class MyBroadcastReceiver extends BroadcastReceiver
+//    {
+//        @Override
+//        public void onReceive(Context context, Intent intent)
+//        {
+//            Bundle extras = intent.getExtras();
+//
+//            String state = extras.getString("extra");
+//
+//            if(state != null)
+//            {
+//
+//            }
+////            if (ApiClient.isNetworkAvailable(getActivity()))
+////            {
+////                AllIncidents();
+////            }
+////            else
+////            {
+////                Toast.makeText(getActivity(), getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
+////            }
+//        }
+//    }
     public void changeLatLong()
     {
         Call<Response> call = ApiClient.create_InstanceAuth(token).CallBack(userid, current_lat, current_long);
@@ -849,12 +1037,47 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response)
             {
-                if(response != null && response.isSuccessful())
+                if(response != null )
                 {
-                    if(response.body() != null && response.body().getSuccess() == 1)
+                    if(response.isSuccessful())
                     {
+                        if(response.body() != null && response.body().getSuccess() == 1)
+                        {
 //                        Toast.makeText(HomeActivity.this, (String) response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
+                    else
+                    {
+                        if(response.errorBody() != null)
+                        {
+                            String msg = response.errorBody().source().toString();
+                            Log.e("msg",""+msg);
+                            String[] arr = msg.split("=");
+                            if(arr.length == 2)
+                            {
+                                msg = arr[1].replace("]"," ").trim();
+                                if(msg != null)
+                                {
+                                    try
+                                    {
+                                        JSONObject obh = new JSONObject(msg);
+                                        if(obh.getString("message") != null)
+                                        {
+                                            String message =  obh.getString("message").toString();
+                                            Log.e("message",""+message);
+//                                            Toast.makeText(HomeActivity.this, ""+message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                Log.e("msg",""+msg);
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -866,6 +1089,9 @@ public class HomeActivity extends BaseActivity implements GoogleApiClient.Connec
             }
         });
     }
+
+
+
 
 //    @Override
 //    public void update()

@@ -22,6 +22,9 @@ import com.dds.helpee.model.Const;
 import com.dds.helpee.model.Response;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -111,20 +114,55 @@ public abstract class BaseActivity extends AppCompatActivity {
           {
             pdd.dismiss();
           }
-          if(response != null && response.isSuccessful())
+          if(response != null )
           {
-            Log.e("profile_response",""+new Gson().toJson(response.body()));
-
-            if(response.body() != null && response.body().getSuccess() == 1)
+            if(response.isSuccessful())
             {
-              String message  = (String) response.body().getMessage();
-              Toast.makeText(context , message, Toast.LENGTH_SHORT).show();
+              Log.e("profile_response",""+new Gson().toJson(response.body()));
+
+              if(response.body() != null && response.body().getSuccess() == 1)
+              {
+                String message  = (String) response.body().getMessage();
+                Toast.makeText(context , message, Toast.LENGTH_SHORT).show();
+              }
+              else
+              {
+                String message  = (String) response.body().getMessage();
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+              }
             }
             else
             {
-              String message  = (String) response.body().getMessage();
-              Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+              if(response.errorBody() != null)
+              {
+                String msg = response.errorBody().source().toString();
+                Log.e("msg",""+msg);
+                String[] arr = msg.split("=");
+                if(arr.length == 2)
+                {
+                  msg = arr[1].replace("]"," ").trim();
+                  if(msg != null)
+                  {
+                    try
+                    {
+                      JSONObject obh = new JSONObject(msg);
+                      if(obh.getString("message") != null)
+                      {
+                        String message =  obh.getString("message").toString();
+                        Log.e("message",""+message);
+                        Toast.makeText(context, ""+message, Toast.LENGTH_SHORT).show();
+                      }
+                    }
+                    catch (JSONException e)
+                    {
+                      e.printStackTrace();
+                    }
+                  }
+                  Log.e("msg",""+msg);
+                }
+              }
             }
+
           }
         }
         @Override

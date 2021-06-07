@@ -65,7 +65,7 @@ public class NearByAdapters extends RecyclerView.Adapter<NearByAdapters.MyViewHo
             if(ReportFragment.listEmergency.get(i).getId() == listAlerts.get(position).getAlertTypeId() )
             {
                 holder.tv_report.setText(ReportFragment.listEmergency.get(i).getTypes());
-                Glide.with(context).load(ApiClient.ALERT_IMAGE_URL+ReportFragment.listEmergency.get(i).getImage()).into(holder.img_report);
+                Glide.with(context).load(ReportFragment.listEmergency.get(i).getImage()).into(holder.img_report);
             }
         }
 

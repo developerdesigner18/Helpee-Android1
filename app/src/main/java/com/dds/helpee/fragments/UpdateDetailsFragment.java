@@ -26,6 +26,9 @@ import com.dds.helpee.model.Data;
 import com.dds.helpee.model.Response;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -111,46 +114,81 @@ public class UpdateDetailsFragment extends Fragment implements BackPressHandler
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        Log.e("profile_response",""+new Gson().toJson(response.body()));
-
-                        if(response.body() != null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
-                            Data objdata = response.body().getData();
-                            if(objdata != null)
+                            Log.e("profile_response",""+new Gson().toJson(response.body()));
+
+                            if(response.body() != null && response.body().getSuccess() == 1)
                             {
-                                et_first_name.setText(objdata.getFirstName());
-                                et_last_name.setText(objdata.getLastName());
-                                et_email.setText(objdata.getEmail());
-                                et_location.setText(objdata.getLocation());
+                                Data objdata = response.body().getData();
+                                if(objdata != null)
+                                {
+                                    et_first_name.setText(objdata.getFirstName());
+                                    et_last_name.setText(objdata.getLastName());
+                                    et_email.setText(objdata.getEmail());
+                                    et_location.setText(objdata.getLocation());
 
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putInt(Const.USER_ID, objdata.getId());
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putString(Const.LANGUAGE, objdata.getLanguage());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putInt(Const.USER_ID, objdata.getId());
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putString(Const.LANGUAGE, objdata.getLanguage());
 
-                                if(objdata.getMobile() != null)
-                                {
-                                    et.putString(Const.PHONE, objdata.getMobile());
+                                    if(objdata.getMobile() != null)
+                                    {
+                                        et.putString(Const.PHONE, objdata.getMobile());
+                                    }
+                                    if(objdata.getEmail() != null)
+                                    {
+                                        et.putString(Const.EMAIL, objdata.getEmail());
+                                    }
+                                    if(objdata.getLocation() != null)
+                                    {
+                                        et.putString(Const.LOCATION, objdata.getLocation());
+                                    }
                                 }
-                                if(objdata.getEmail() != null)
-                                {
-                                    et.putString(Const.EMAIL, objdata.getEmail());
-                                }
-                                if(objdata.getLocation() != null)
-                                {
-                                    et.putString(Const.LOCATION, objdata.getLocation());
-                                }
+                            }
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
                 @Override
@@ -194,51 +232,86 @@ public class UpdateDetailsFragment extends Fragment implements BackPressHandler
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null )
                     {
-                        Log.e("update user response",""+new Gson().toJson(response.body()));
-
-                        if(response.body() != null && response.body().getSuccess() == 1)
+                        if(response.isSuccessful())
                         {
+                            Log.e("update user response",""+new Gson().toJson(response.body()));
 
-                            Data objdata = response.body().getData();
-                            if(objdata != null)
+                            if(response.body() != null && response.body().getSuccess() == 1)
                             {
-                                et_first_name.setText(objdata.getFirstName());
-                                et_last_name.setText(objdata.getLastName());
-                                et_email.setText(objdata.getEmail());
-                                et_location.setText(objdata.getLocation());
 
-                                et.putString(Const.FIRST_NAME, objdata.getFirstName());
-                                et.putString(Const.LAST_NAME, objdata.getLastName());
-                                et.putInt(Const.USER_ID, objdata.getId());
-                                if(objdata.getToken() != null)
+                                Data objdata = response.body().getData();
+                                if(objdata != null)
                                 {
-                                    et.putString(Const.TOKEN, objdata.getToken());
+                                    et_first_name.setText(objdata.getFirstName());
+                                    et_last_name.setText(objdata.getLastName());
+                                    et_email.setText(objdata.getEmail());
+                                    et_location.setText(objdata.getLocation());
+
+                                    et.putString(Const.FIRST_NAME, objdata.getFirstName());
+                                    et.putString(Const.LAST_NAME, objdata.getLastName());
+                                    et.putInt(Const.USER_ID, objdata.getId());
+                                    if(objdata.getToken() != null)
+                                    {
+                                        et.putString(Const.TOKEN, objdata.getToken());
+                                    }
+                                    if(objdata.getMobile() != null)
+                                    {
+                                        et.putString(Const.PHONE, objdata.getMobile());
+                                    }
+                                    if(objdata.getEmail() != null)
+                                    {
+                                        et.putString(Const.EMAIL, objdata.getEmail());
+                                    }
+                                    if(objdata.getLocation() != null)
+                                    {
+                                        et.putString(Const.LOCATION, objdata.getLocation());
+                                    }
                                 }
-                                if(objdata.getMobile() != null)
-                                {
-                                    et.putString(Const.PHONE, objdata.getMobile());
-                                }
-                                if(objdata.getEmail() != null)
-                                {
-                                    et.putString(Const.EMAIL, objdata.getEmail());
-                                }
-                                if(objdata.getLocation() != null)
-                                {
-                                    et.putString(Const.LOCATION, objdata.getLocation());
-                                }
+
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, new SettingsFragment()).addToBackStack(null).commit();
                             }
-
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame, new SettingsFragment()).addToBackStack(null).commit();
+                            else
+                            {
+                                String message  = (String) response.body().getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else
                         {
-                            String message  = (String) response.body().getMessage();
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
                         }
+
                     }
                 }
                 @Override

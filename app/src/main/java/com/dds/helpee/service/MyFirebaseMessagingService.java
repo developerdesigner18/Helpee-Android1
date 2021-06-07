@@ -36,9 +36,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     int userId = 0;
     String msgId = null , title , body, loginToken = null;
     String channel_id = "HelpeeChannelId" , channel_name = "HelpeeChannelName";
-
     boolean showNotification = true;
-
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
@@ -49,7 +47,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         et = pref.edit();
 
         showNotification = pref.getBoolean(Const.NOTIFICATION, true);
-
 
         if(remoteMessage.getData() != null)
         {
@@ -193,6 +190,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         mNotifyManager.notify(123, mBuilder.build());
+
+        Intent intent1 = new Intent();
+        intent1.putExtra("extra", "change");
+        intent1.setAction("com.dds.helpee");
+        sendBroadcast(intent1);
     }
     public void sendNotiication1(RemoteMessage remoteMessage)
     {

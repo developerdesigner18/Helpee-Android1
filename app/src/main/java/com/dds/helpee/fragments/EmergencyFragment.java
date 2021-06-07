@@ -49,6 +49,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -310,29 +313,64 @@ public class EmergencyFragment extends Fragment implements UpdateableFragment
                         {
                             pd.dismiss();
                         }
-                        if(response != null && response.isSuccessful())
+                        if(response != null)
                         {
-                            if(response.body() != null && response.body().getSuccess() == 1)
+                            if(response.isSuccessful())
                             {
-                                Number objnumber = response.body().getNumber();
-                                if(objnumber != null)
+                                if(response.body() != null && response.body().getSuccess() == 1)
                                 {
-                                    police_no = objnumber.getPoliceNo();
-                                    rescue_number = objnumber.getRescueNo();
-                                    setCountryNameFlag();
+                                    Number objnumber = response.body().getNumber();
+                                    if(objnumber != null)
+                                    {
+                                        police_no = objnumber.getPoliceNo();
+                                        rescue_number = objnumber.getRescueNo();
+                                        setCountryNameFlag();
 
-                                    Log.e("police_no", ""+police_no);
-                                    Log.e("rescue_number", ""+rescue_number);
+                                        Log.e("police_no", ""+police_no);
+                                        Log.e("rescue_number", ""+rescue_number);
 
-                                    tv_police_number.setText(police_no);
-                                    tv_rescue_number.setText(rescue_number);
+                                        tv_police_number.setText(police_no);
+                                        tv_rescue_number.setText(rescue_number);
+                                    }
+                                }
+                                else
+                                {
+                                    String message  = (String) response.body().getMessage();
+                                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                 }
                             }
                             else
                             {
-                                String message  = (String) response.body().getMessage();
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                if(response.errorBody() != null)
+                                {
+                                    String msg = response.errorBody().source().toString();
+                                    Log.e("msg",""+msg);
+                                    String[] arr = msg.split("=");
+                                    if(arr.length == 2)
+                                    {
+                                        msg = arr[1].replace("]"," ").trim();
+                                        if(msg != null)
+                                        {
+                                            try
+                                            {
+                                                JSONObject obh = new JSONObject(msg);
+                                                if(obh.getString("message") != null)
+                                                {
+                                                    String message =  obh.getString("message").toString();
+                                                    Log.e("message",""+message);
+                                                    Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        Log.e("msg",""+msg);
+                                    }
+                                }
                             }
+
                         }
                     }
 

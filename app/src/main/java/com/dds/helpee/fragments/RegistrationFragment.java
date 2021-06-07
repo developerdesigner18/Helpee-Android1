@@ -54,6 +54,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -400,15 +403,50 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
                     }
                     if(response != null)
                     {
-                        Log.e("toast",""+new Gson().toJson(response.body()));
-                        if(response.body() != null && response.isSuccessful())
+                        if(response.isSuccessful())
                         {
-                            if(response.body().getSuccess() == 1)
+                            Log.e("toast",""+new Gson().toJson(response.body()));
+                            if(response.body() != null)
                             {
-                                String message = (String) response.body().getMessage();
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                if(response.body().getSuccess() == 1)
+                                {
+                                    String message = (String) response.body().getMessage();
+                                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
+                        else
+                        {
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
+                        }
+
                     }
                 }
 
@@ -561,43 +599,78 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
                     {
                         pd.dismiss();
                     }
-                    if (response != null && response.isSuccessful())
+                    if (response != null)
                     {
-                        Log.e("response", "" + new Gson().toJson(response.body()));
-                        if (response.body() != null)
+                        if(response.isSuccessful())
                         {
-                            if (response.body().getSuccess() == 1)
+                            Log.e("response", "" + new Gson().toJson(response.body()));
+                            if (response.body() != null)
                             {
-                                double message = (double) response.body().getMessage();
-                                if (message != 0)
+                                if (response.body().getSuccess() == 1)
                                 {
-                                    code = (int) message;
-                                    Log.e("languageCode",""+languageCode);
-                                    if(languageCode != null)
+                                    double message = (double) response.body().getMessage();
+                                    if (message != 0)
                                     {
-                                        String language_code = languageCode.toLowerCase();
-                                        et.putString(Const.LANGUAGE , language_code);
-                                        et.commit();
-                                        et.apply();
+                                        code = (int) message;
+                                        Log.e("languageCode",""+languageCode);
+                                        if(languageCode != null)
+                                        {
+                                            String language_code = languageCode.toLowerCase();
+                                            et.putString(Const.LANGUAGE , language_code);
+                                            et.commit();
+                                            et.apply();
 
-                                        updateResources(getActivity(), language_code);
-                                        LocaleManager1.setNewLocale(getActivity(), language_code);
+                                            updateResources(getActivity(), language_code);
+                                            LocaleManager1.setNewLocale(getActivity(), language_code);
 
 //                                        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.frame,new RegistrationFragment()).commit();
-                                        MainActivity.pager.getAdapter().notifyDataSetChanged();
+                                            MainActivity.pager.getAdapter().notifyDataSetChanged();
+                                            relative_verification.setVisibility(View.VISIBLE);
+                                            relative_regis.setVisibility(View.VISIBLE);
+                                        }
                                         relative_verification.setVisibility(View.VISIBLE);
-                                        relative_regis.setVisibility(View.VISIBLE);
+                                        relative_regis.setVisibility(View.GONE);
                                     }
-                                    relative_verification.setVisibility(View.VISIBLE);
-                                    relative_regis.setVisibility(View.GONE);
+                                }
+                                else
+                                {
+                                    String message = (String) response.body().getMessage();
+                                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            if(response.errorBody() != null)
                             {
-                                String message = (String) response.body().getMessage();
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
                             }
                         }
+
                     }
                 }
                 @Override
@@ -640,55 +713,6 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
                 pd.show();
             }
 
-//            ApiInterface itemService = getRetrofitInstance(Data.class, new GetItemDetailsDeserializer()).create(ApiInterface.class);
-//            Call<Response> call = itemService.VerifyCode(type, email, mobile, code);
-//
-//            call.enqueue(new Callback<Response>()
-//            {
-//                @Override
-//                public void onResponse(Call<Response> call, retrofit2.Response<Response> response)
-//                {
-//                    if(pd != null && pd.isShowing())
-//                    {
-//                        pd.dismiss();
-//                    }
-//                    if(response != null)
-//                    {
-//                        Log.e("response",""+new Gson().toJson(response.body()));
-//                        if(response.isSuccessful())
-//                        {
-//                            if(response.body().getSuccess() == 1)
-//                            {
-////                                Gson gson = new GsonBuilder()
-////                                        .registerTypeAdapter(Message.class, new GetItemDetailsDeserializer())
-////                                        .create();
-//
-//                                Gson gson = new GsonBuilder()
-//                                        .setLenient()
-//                                        .create();
-////                                Message person = gson.fromJson(response.body().getMessage().toString(), Message.class);
-//                                Data person = new Gson().fromJson(response.body().getMessage().toString(), Data.class);
-////                                UserDate customObject = customGson.fromJson(userJson, UserDate.class);
-////                                Object m = response.body().getMessage();
-//
-//                                Log.e("m",""+person.getEmail());
-////                                String name = (Message) m.
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<Response> call, Throwable t)
-//                {
-//                    if(pd != null && pd.isShowing())
-//                    {
-//                        pd.dismiss();
-//                    }
-//                    Toast.makeText(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-//                }
-//            });
-
             Call<Response> call = ApiClient.create_Istance().VerifyCode(type, email, mobile, code);
 
             call.enqueue(new Callback<Response>()
@@ -700,12 +724,14 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
                     {
                         pd.dismiss();
                     }
-                    if(response != null && response.isSuccessful())
+                    if(response != null)
                     {
-                        if(response.body() != null)
+                        if(response.isSuccessful())
                         {
-                            if(response.body().getSuccess()== 1)
+                            if(response.body() != null)
                             {
+                                if(response.body().getSuccess()== 1)
+                                {
                                     Data data = (Data) response.body().getData();
                                     if(data != null)
                                     {
@@ -730,15 +756,48 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
                                         Intent i_home = new Intent(getActivity(), HomeActivity.class);
                                         startActivity(i_home);
                                     }
-                                   String message = (String) response.body().getMessage();
-                                  Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                            }
-                            else
-                            {
-                                String message = (String) response.body().getMessage();
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                    String message = (String) response.body().getMessage();
+                                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    String message = (String) response.body().getMessage();
+                                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
+                        else
+                        {
+                            if(response.errorBody() != null)
+                            {
+                                String msg = response.errorBody().source().toString();
+                                Log.e("msg",""+msg);
+                                String[] arr = msg.split("=");
+                                if(arr.length == 2)
+                                {
+                                    msg = arr[1].replace("]"," ").trim();
+                                    if(msg != null)
+                                    {
+                                        try
+                                        {
+                                            JSONObject obh = new JSONObject(msg);
+                                            if(obh.getString("message") != null)
+                                            {
+                                                String message =  obh.getString("message").toString();
+                                                Log.e("message",""+message);
+                                                Toast.makeText(getActivity(), ""+message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    Log.e("msg",""+msg);
+                                }
+                            }
+                        }
+
                     }
                 }
                 @Override
@@ -1138,40 +1197,6 @@ public class RegistrationFragment extends Fragment implements CountriesAdapter.C
             return false;
         }
     }
-//    public void getAllCountries()
-//    {
-//        Call<CountryListResponse> call = ApiClient.create_Istance().GetAllCountries();
-//        call.enqueue(new Callback<CountryListResponse>()
-//        {
-//            @Override
-//            public void onResponse(Call<CountryListResponse> call, retrofit2.Response<CountryListResponse> response)
-//            {
-//                if(response != null && response.isSuccessful())
-//                {
-//                    if(response.body() != null)
-//                    {
-//                        listCountries = response.body().getNumberList();
-//
-//                        if(listCountries != null && listCountries.size() > 0 )
-//                        {
-//                            Toast.makeText(getActivity(), "countrylist"+listCountries.size() , Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }
-//                else
-//                {
-//                    Toast.makeText(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<CountryListResponse> call, Throwable t)
-//            {
-//                Log.e("failure", ""+t.toString());
-//                Toast.makeText(getActivity(), t.toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
 }
 
 
